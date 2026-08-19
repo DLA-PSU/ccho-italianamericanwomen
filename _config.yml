@@ -50,8 +50,8 @@ metadata: ccho-metadata
 #
 organization-name: "Department of Spanish, Italian and Portuguese. The Pennsylvania State University"
 organization-link: https://sip.la.psu.edu
-organization-logo-banner: https://cdil.lib.uidaho.edu/storying-extinction/assets/img/cdil.png
-organization-logo-nav: https://cdil.lib.uidaho.edu/assets/img/logo.png
+organization-logo-banner: /assets/img/psu-cla.png
+organization-logo-nav: /assets/img/psu-cla.png
 
 ##########
 # ROBOTS EXCLUDE
