@@ -1,0 +1,13 @@
+<div id="player" class=""><audio id="audio-player" class="w-100 iframe-player" controls>
+        <source src="{{page.object_location}}" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+<script>
+    var mediaElement = document.getElementById('audio-player');
+
+    function timestampMP3(x) {
+        mediaElement.currentTime = x;
+        mediaElement.play();
+    }
+</script>

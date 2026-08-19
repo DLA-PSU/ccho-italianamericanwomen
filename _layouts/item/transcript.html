@@ -1,0 +1,121 @@
+---
+# generic fallback item page layout
+# displays image or icon depending on "image_thumb"
+layout: item/item-page-base
+custom-foot: transcript/js/transcript-js.html;transcript/js/scrollama-js.html;transcript/js/pagedjs-js.html
+gallery: true
+---
+{%- comment -%} Determine if transcript filename is the objectid of the item or if it is determined by the metadata's object-transcript field {%- endcomment -%}
+{% if page.object-transcript contains ".csv"%}
+{% assign transcript = page.object-transcript | remove: ".csv" %}
+{% assign items = site.data.transcripts[transcript] %}
+{% elsif page.object-transcript %}
+{% assign items = site.data.transcripts[page.object-transcript] %}
+{% else %}
+{% assign items = site.data.transcripts[page.objectid] %}
+{% endif %}
+
+{%- comment -%} if using color-coded visualization find all words used in the subject metadata {%- endcomment -%}
+{% if site.data.filters %}
+{% include transcript/style/filter-style.html %}
+{%- assign min-count = 1 -%}
+{%- assign raw-subjects = items | map: "tags" | compact | join: ";" | split: ";" -%}
+{%- capture subjects -%}{% for s in raw-subjects %}{% if s != "" %}{{- s | strip | downcase -}};{% endif %}{%- endfor
+-%}{%-
+endcapture -%}
+{%- assign subjects = subjects | split: ";" -%}
+{%- assign uniqueSubjects = subjects | uniq | sort -%}
+{% endif %}
+
+{%- comment -%} determine AV component (if there is one) {%- endcomment -%}
+{% if page.object_location contains 'vimeo' %}
+{% assign av = "vimeo" %}
+{% assign vimeo_id = page.object_location | split: '/' | last %}
+{%- elsif page.object_location contains 'youtu' -%}
+{% assign av = "youtube" %}
+{% assign youtube_id = page.object_location | split: '/' | last %}
+{% if youtube_id contains 'v=' %}{% assign youtube_id = youtube_id | split: 'v=' | last | split: '&' | first %}
+{% elsif youtube_id contains '?' %}{% assign youtube_id = youtube_id | split: '?' | first %}{% endif %}
+{%- elsif page.object_location contains 'mp3' -%}
+{% assign av = "mp3" %}
+{%- elsif page.object_location contains 'soundcloud' -%}
+{% assign av = "soundcloud" %}
+{% assign soundcloud_id = page.object_location | split: '.com/' | last %}
+{%- elsif page.object_location contains 'archive.org' -%}
+{% assign av = "internetarchive" %}
+{% assign internetarchive_id = page.object_location | split: '/' | last %}
+{%endif%}
+
+
+{% assign children = site.data[site.metadata] | where_exp: 'item','item.parentid == page.objectid' %}
+
+<div id="scrolly">
+  <article>
+    <div class="step my-3 {% unless site.data.theme.media-scroll == false %}
+    pb-5{% endunless %}" id="step0" >
+      <div id="upper-content">
+        {% if site.data.theme.media-scroll == true %}
+        {% include transcript/style/media-scroll-wrapper.html %}
+        {% endif %}
+        {% if av %}
+        {% include transcript/item/av.html %}
+        {% endif %}
+        <div id="transcript-metadata" class="no-print">
+          {% include transcript/item/transcript-metadata.html %}
+          {% if children.size > 0 %}
+          <div id="child-objects" class="my-4">
+    
+            {% include transcript/item/ohd-compound-item-modal-gallery.html %}
+    
+          </div>{% endif %}
+        </div>
+        {% if site.data.filters and uniqueSubjects.size > 0 %}
+        {% include transcript/item/transcript-viz.html %}
+        {% endif %}
+  </div>
+  </div>
+
+{%- comment -%} Check if index data exists for tabs {%- endcomment -%}
+{% if page.object-transcript contains ".csv" %}
+    {% assign index_file = page.object-transcript | remove: ".csv" %}
+{% elsif page.object-transcript %}
+    {% assign index_file = page.object-transcript %}
+{% else %}
+    {% assign index_file = page.objectid %}
+{% endif %}
+{% assign index_points = site.data.indexes[index_file] %}
+{% assign trancheck = items | map: "words" | compact %}
+
+<div class="step my-3" id="step1" >
+{% if index_points.size > 0 and trancheck.size > 1 %}
+{%- comment -%} Both index and transcript exist - show tabs {%- endcomment -%}
+{% assign has_index = true %}
+<ul class="nav nav-tabs mb-3" id="transcript-section" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="transcript-tab" data-bs-toggle="tab" data-bs-target="#transcript-content" type="button" role="tab" aria-controls="transcript-content" aria-selected="true">Transcript</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="index-tab" data-bs-toggle="tab" data-bs-target="#index-content" type="button" role="tab" aria-controls="index-content" aria-selected="false">Index <span class="badge bg-secondary">{{ index_points.size }}</span></button>
+  </li>
+</ul>
+<div class="tab-content" id="transcriptTabsContent">
+  <div class="tab-pane fade show active" id="transcript-content" role="tabpanel" aria-labelledby="transcript-tab">
+    {% include transcript/item/transcript.html %}
+  </div>
+  <div class="tab-pane fade" id="index-content" role="tabpanel" aria-labelledby="index-tab">
+    <h2 class="visually-hidden">Interview Index</h2>
+    {% include transcript/item/index-display.html %}
+  </div>
+</div>
+{% elsif index_points.size > 0 %}
+{%- comment -%} Only index exists - show just index without tabs {%- endcomment -%}
+{% assign has_index = false %}
+<h2 id="transcript-section">Interview Index</h2>
+{% include transcript/item/index-display.html %}
+{% elsif trancheck.size > 1 %}
+{%- comment -%} Only transcript exists - show just transcript without tabs {%- endcomment -%}
+{% assign has_index = false %}
+{% include transcript/item/transcript.html %}
+{% endif %}
+</div>
+
