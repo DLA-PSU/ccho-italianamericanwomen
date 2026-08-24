@@ -15,7 +15,7 @@ search-and-filters-sticky: true ## true/false --> determines if the search and f
 ##########
 # Visualization page / Oral History as Data Options 
 # 
-as-data: false ## true/false --> determines if the "As Data" button and modal that pops up if you click it will appear at the top right of the visualization page
+as-data: true ## true/false --> determines if the "As Data" button and modal that pops up if you click it will appear at the top right of the visualization page
 transcript-contents: true ## true/false --> determines if the contents of the individual interviews will appear and be filtered at the bottom of the visualization page (below the color coded portion)
 
 ### For Large Collections -- !!!! Warning ###
@@ -41,7 +41,7 @@ base-layout: OHD # OHD or CB
 # HOME PAGE
 # The optional visualization on the home page is a composite of the transcripts color-coded representation 
 # To turn it off, either don't include a filters or change the value below to false.
-home-page-visualization: true # true / false, if true, the visualization will appear on the home page
+home-page-visualization: false # true / false, if true, the visualization will appear on the home page
 # if false or there's no _data/filters.csv, the image defined by featured-image will be used as a featured image on the homepage
 
 # featured image is used in home page banner and in meta markup to represent the collection
